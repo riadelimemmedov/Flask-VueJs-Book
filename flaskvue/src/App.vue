@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app-vue-id">
     <router-view></router-view>
   </div>
 </template>
@@ -9,5 +9,7 @@
 </script>
 
 <style>
-
+  #app-vue-id{
+    margin-top: 60px;
+  }
 </style>
