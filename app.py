@@ -1,4 +1,4 @@
-from flask import Flask, jsonify,render_template, request
+from flask import Flask, jsonify,render_template, request,redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from flask_cors import CORS
@@ -36,18 +36,29 @@ def pingPongView():
 #!allBookView
 @app.route('/books',methods=['GET','POST'])
 def allBookView():
-    # if request.method == 'POST':
-    #     title_book = request.form.get('title_book')
-    #     author_book = request.form.get('author_book')
-    #     created_book = Book(title_book=title_book,author_book=author_book)
-    #     db.session.add(created_book)
-    #     db.session.commit()
-    #     print('Insert successfully database')
-    # return render_template('index.html')
-    
+    if request.method == 'POST':
+        post_data = request.get_json()#JSON.parse(post_data) like
+        title = post_data['title']
+        author = post_data['author']
+        read = post_data['read']
+        addedBook = Book(title_book=title,author_book=author,is_reading_book=read)
+        db.session.add(addedBook)
+        db.session.commit()
+        print('Successfully inserted new book data base from vue js')
+    #else => first page loading this below code => Book.query.all()
     books = Book.query.all()
     dictdata = [book.to_dict() for book in books]
     return jsonify({'status':'Success','books':dictdata})
+
+@app.route('/books/<int:id>',methods=['PUT'])
+def updateBookView(id):
+    book = Book.query.get(id)
+    if request.method == 'PUT':
+        post_data = request.get_json()
+        print(post_data)
+    #return redirect(url_for('allBookView'))
+    #return render_template('index.html',book=book)
+    return jsonify({'success_update_book':'success'})
 
 #?__name__ == '__main__'
 if __name__ == "__main__":
