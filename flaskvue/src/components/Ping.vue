@@ -18,11 +18,9 @@
         axios.get(path)
           .then((response)=>{
             console.log('Successfully Send MESSAGE')
-            console.log(response)
             this.msg = response.data
           })
           .catch((err)=>{
-            console.log('Erros Send Message')
             console.log(err)
           })
       }

@@ -15,7 +15,7 @@
               <th scope="col">Read?</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="books.length != 0">
             <tr v-for="(book,index) in books" :key="index">
               <td>{{book.title_book}}</td>
               <td>{{book.author_book}}</td>
@@ -33,11 +33,29 @@
                     >
                     Update
                   </button>
-                  <button class="btn btn-danger btn-sm">Delete</button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    @click="onDeleteBook(book)"
+                    >Delete</button>
                 </div>
               </td>
             </tr>
           </tbody>
+
+          <tbody v-else>
+            <div class="w-100 mt-2" style="width:100%">
+                <b-alert variant="warning" show dismissible>
+                  <p>Not Found Book
+                    <!-- <router-link :to="{ name: 'books_list_router'}">
+                      <strong class="text-muted">Add Book</strong>
+                    </router-link> -->
+                    <a class="text-danger font-weight-bold" v-b-modal.book-modal>Add Book</a>
+                  </p>
+                </b-alert>
+            </div>
+          </tbody>
+
         </table>
       </div>
     </div>
@@ -160,7 +178,7 @@
             this.books = response.data.books
           })
           .catch((err)=>{
-            console.log('Error List Books')
+            //console.log('Error List Books')
             console.log(err)
           })
       },
@@ -174,7 +192,7 @@
             this.showMessage = true
           })
           .catch((err)=>{
-            console.log('Post request error')
+            //console.log('Post request error')
             console.log(err)
             this.getBooks()
           })
@@ -210,33 +228,25 @@
         this.initForm()
       },
       editBook(book){
-        console.log('Is reading book NOT array ', book.is_reading_book)
-        console.log('Is reading book YES array ', [book.is_reading_book])
 
         this.editForm.id = book.id
         this.editForm.title = book.title_book//from vue js template book data
         this.editForm.author = book.author_book
         this.editForm.read = [book.is_reading_book]
-        //console.log('Edited Book ', this.editForm)
-        //console.log('Edir form read value ', this.editForm.read)
       },
       onSubmitUpdate(e){
         e.preventDefault()
         this.$refs.editBookModal.hide()
-        console.log('bunedi ala ', this.editForm.read)
         let read = false;
         if(this.editForm.read.includes('true')){
-          alert('True var listede')
           read = true
         }
         //if selected checkbox return readed value true
-        console.log('Read value ', read)
         const payload = {
           title:this.editForm.title,
           author:this.editForm.author,
           read:read
         }
-        //console.log('buneeee ', this.editForm.read)
         this.updateBook(payload,this.editForm.id)
       },
       updateBook(payload,bookId){
@@ -245,13 +255,11 @@
         axios.put(path,payload)
           .then((response)=>{
             console.log('Successfully update book')
-            console.log(response.data)
             this.getBooks()
             this.message = 'Book Updated...'
             this.showMessage = true
           })
           .catch((err)=>{
-            console.log('Error updated book')
             console.log(err)
             this.getBooks()
           })
@@ -261,6 +269,24 @@
         this.$refs.editBookModal.hide()
         this.initForm()
         this.getBooks()
+      },
+      removeBook(bookId){
+        if(confirm('Are you sure you want to remove book?')){//if
+          axios.delete(`http://127.0.0.1:5000/books/${bookId}`)
+          .then((response)=>{
+            this.getBooks()
+            this.message = 'Successfully Deleted Book'
+            this.showMessage = true
+          })
+          .catch((err)=>{
+            console.log('Deleted Book Error')
+            console.log(err)
+            this.getBooks()
+          })
+        }
+      },
+      onDeleteBook(deletedBook){
+        this.removeBook(deletedBook.id)
       }
     },
     components:{
@@ -272,6 +298,8 @@
       this.initForm()
     }
   }
+
+
 </script>
 
 <style>

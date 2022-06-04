@@ -50,14 +50,22 @@ def allBookView():
     dictdata = [book.to_dict() for book in books]
     return jsonify({'status':'Success','books':dictdata})
 
-@app.route('/books/<int:id>',methods=['PUT'])
+#!updateBookView
+@app.route('/books/<int:id>',methods=['PUT','DELETE'])
 def updateBookView(id):
-    book = Book.query.get(id)
     if request.method == 'PUT':
+        book = Book.query.get(id)
         post_data = request.get_json()
-        print(post_data)
-    #return redirect(url_for('allBookView'))
-    #return render_template('index.html',book=book)
+        book.title_book =  post_data['title']
+        book.author_book = post_data['author']
+        book.is_reading_book = post_data['read']
+        db.session.commit()
+        print('Successfully Updated Book Data')
+    if request.method == 'DELETE':
+        deleted_book = Book.query.get(id)
+        db.session.delete(deleted_book)
+        db.session.commit()
+        print('Successfully Deleted Book Data')
     return jsonify({'success_update_book':'success'})
 
 #?__name__ == '__main__'
