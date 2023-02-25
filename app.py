@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from flask_cors import CORS
 
+from datetime import datetime
+
 #*configution
 DEBUG=True
 #rm -fr .git => delete repo permanently
@@ -26,6 +28,14 @@ class Book(db.Model,SerializerMixin):
     title_book = db.Column(db.String(100),unique=True,nullable=False)
     author_book = db.Column(db.String(100),unique=False,nullable=False)
     is_reading_book = db.Column(db.Boolean,default=False,nullable=False)
+
+
+class Block(db.Model,SerializerMixin):
+    id = db.Column('Block Id',db.Integer,primary_key=True)
+    block_number = db.Column('Block Number',db.String(100),unique=False,nullable=False)
+    block_miner = db.Column('Block Miner',db.String(100),unique=False,nullable=False)
+    created_date = db.Column('Date of Create',db.DateTime,default=datetime.utcnow.strftime('%Y-%d-%m'))
+    # time_stamp_unix = use datetime.fromtimestamp method for saving database
 
 
 #!pingPongView
